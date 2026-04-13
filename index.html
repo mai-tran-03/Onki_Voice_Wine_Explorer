@@ -1,25 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Onki — Wine Explorer</title>
   <style>
     :root {
-      --wine: #7B1E3A;
-      --wine-dark: #4A0E21;
+      --wine:       #7B1E3A;
       --wine-light: #C4586E;
-      --cream: #F9F3E8;
-      --gold: #C9A84C;
-      --bg: #130509;
+      --cream:      #F9F3E8;
+      --gold:       #C9A84C;
+      --bg:         #130509;
     }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: Georgia, serif;
@@ -31,497 +24,428 @@
       align-items: center;
     }
 
-    /* ── Header ── */
     header {
       padding: 36px 24px 12px;
       text-align: center;
     }
+    header h1 { font-size: 2.4rem; letter-spacing: 6px; color: var(--gold); }
+    header p  { font-family: sans-serif; font-size: 0.82rem; color: #888;
+                margin-top: 4px; letter-spacing: 1px; text-transform: uppercase; }
 
-    header h1 {
-      font-size: 2.4rem;
-      letter-spacing: 6px;
-      color: var(--gold);
-    }
-
-    header p {
-      font-family: sans-serif;
-      font-size: 0.82rem;
-      color: #888;
-      margin-top: 4px;
-      letter-spacing: 1px;
-      text-transform: uppercase;
-    }
-
-    /* ── Status bar ── */
     #status-bar {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(255, 255, 255, 0.04);
-      padding: 7px 18px;
-      border-radius: 20px;
-      font-family: sans-serif;
-      font-size: 0.78rem;
-      color: #888;
+      display: flex; align-items: center; gap: 8px;
+      background: rgba(255,255,255,0.04);
+      padding: 7px 18px; border-radius: 20px;
+      font-family: sans-serif; font-size: 0.78rem; color: #888;
       margin: 16px 0 28px;
     }
+    .dot { width: 7px; height: 7px; border-radius: 50%; background: #555; flex-shrink: 0; }
+    .dot.green  { background: #4CAF50; }
+    .dot.orange { background: #FF9800; }
+    .dot.pulse  { background: var(--gold); animation: dotpulse 1.2s infinite; }
+    @keyframes dotpulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
 
-    .dot {
-      width: 7px;
-      height: 7px;
-      border-radius: 50%;
-      background: #555;
-      flex-shrink: 0;
-    }
-
-    .dot.green {
-      background: #4CAF50;
-    }
-
-    .dot.orange {
-      background: #FF9800;
-    }
-
-    .dot.pulse {
-      animation: dotpulse 1.2s infinite;
-      background: var(--gold);
-    }
-
-    @keyframes dotpulse {
-
-      0%,
-      100% {
-        opacity: 1;
-      }
-
-      50% {
-        opacity: 0.3;
-      }
-    }
-
-    /* ── Main ── */
     main {
-      width: 100%;
-      max-width: 580px;
+      width: 100%; max-width: 580px;
       padding: 0 20px 60px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 22px;
+      display: flex; flex-direction: column;
+      align-items: center; gap: 22px;
     }
 
-    /* ── Mic button ── */
     #mic-btn {
-      width: 88px;
-      height: 88px;
-      border-radius: 50%;
-      background: var(--wine);
-      border: 2px solid var(--gold);
-      color: white;
-      font-size: 2rem;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      width: 88px; height: 88px; border-radius: 50%;
+      background: var(--wine); border: 2px solid var(--gold);
+      color: white; font-size: 2rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
       transition: transform 0.15s, background 0.2s;
-      position: relative;
     }
-
-    #mic-btn:hover:not(:disabled) {
-      transform: scale(1.06);
-      background: var(--wine-light);
-    }
-
-    #mic-btn:disabled {
-      opacity: 0.4;
-      cursor: not-allowed;
-    }
-
-    #mic-btn.listening {
-      background: #8B0000;
-      animation: pulse 1.3s infinite;
-    }
-
+    #mic-btn:hover:not(:disabled) { transform: scale(1.06); background: var(--wine-light); }
+    #mic-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+    #mic-btn.listening { background: #8B0000; animation: pulse 1.3s infinite; }
     @keyframes pulse {
-
-      0%,
-      100% {
-        box-shadow: 0 0 0 0 rgba(196, 88, 110, 0.55);
-      }
-
-      50% {
-        box-shadow: 0 0 0 22px rgba(196, 88, 110, 0);
-      }
+      0%,100% { box-shadow: 0 0 0 0   rgba(196,88,110,0.55); }
+      50%      { box-shadow: 0 0 0 22px rgba(196,88,110,0); }
     }
+    #mic-label { font-family: sans-serif; font-size: 0.82rem; color: #777; margin-top: -10px; }
 
-    #mic-label {
-      font-family: sans-serif;
-      font-size: 0.82rem;
-      color: #777;
-      margin-top: -10px;
-    }
-
-    /* ── Cards ── */
     .card {
       width: 100%;
-      background: rgba(255, 255, 255, 0.05);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 14px;
-      padding: 18px 20px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 14px; padding: 18px 20px;
       display: none;
     }
-
-    .card.visible {
-      display: block;
-    }
-
+    .card.visible { display: block; }
     .card-label {
-      font-family: sans-serif;
-      font-size: 0.68rem;
-      text-transform: uppercase;
-      letter-spacing: 2px;
-      color: var(--gold);
-      margin-bottom: 10px;
+      font-family: sans-serif; font-size: 0.68rem;
+      text-transform: uppercase; letter-spacing: 2px;
+      color: var(--gold); margin-bottom: 10px;
     }
-
     .card-text {
-      font-family: sans-serif;
-      font-size: 0.95rem;
-      line-height: 1.65;
-      color: var(--cream);
-      white-space: pre-wrap;
+      font-family: sans-serif; font-size: 0.95rem;
+      line-height: 1.65; color: var(--cream); white-space: pre-wrap;
     }
+    #question-card { border-color: rgba(201,168,76,0.25); }
+    #answer-card   { border-color: rgba(123,30,58,0.6); }
 
-    #question-card {
-      border-color: rgba(201, 168, 76, 0.25);
-    }
-
-    #answer-card {
-      border-color: rgba(123, 30, 58, 0.6);
-    }
-
-    /* ── Loading ── */
-    #loading {
-      display: none;
-      flex-direction: column;
-      align-items: center;
-      gap: 12px;
-      color: #888;
-      font-family: sans-serif;
-      font-size: 0.88rem;
-    }
-
-    #loading.visible {
-      display: flex;
-    }
-
-    .spinner {
-      width: 30px;
-      height: 30px;
-      border: 3px solid rgba(255, 255, 255, 0.08);
-      border-top-color: var(--wine-light);
-      border-radius: 50%;
-      animation: spin 0.75s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    /* ── Replay button ── */
     #speak-btn {
-      display: none;
-      align-items: center;
-      gap: 6px;
+      display: none; align-items: center; gap: 6px;
       background: transparent;
-      border: 1px solid rgba(201, 168, 76, 0.5);
-      color: var(--gold);
-      padding: 8px 20px;
-      border-radius: 20px;
-      font-family: sans-serif;
-      font-size: 0.82rem;
-      cursor: pointer;
+      border: 1px solid rgba(201,168,76,0.5);
+      color: var(--gold); padding: 8px 20px;
+      border-radius: 20px; font-family: sans-serif;
+      font-size: 0.82rem; cursor: pointer;
       transition: background 0.2s;
     }
+    #speak-btn.visible { display: flex; }
+    #speak-btn:hover { background: rgba(201,168,76,0.08); }
 
-    #speak-btn.visible {
-      display: flex;
+    /* Hint pills */
+    #hints {
+      display: flex; flex-wrap: wrap; gap: 8px;
+      justify-content: center;
     }
-
-    #speak-btn:hover {
-      background: rgba(201, 168, 76, 0.08);
+    .hint {
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 20px; padding: 6px 14px;
+      font-family: sans-serif; font-size: 0.78rem;
+      color: #aaa; cursor: pointer; transition: all 0.2s;
     }
+    .hint:hover { border-color: var(--gold); color: var(--gold); }
 
-    /* ── Error toast ── */
     #error-toast {
-      position: fixed;
-      bottom: 24px;
-      left: 50%;
+      position: fixed; bottom: 24px; left: 50%;
       transform: translateX(-50%) translateY(90px);
-      background: #6B1010;
-      color: #fdd;
-      padding: 12px 24px;
-      border-radius: 10px;
-      font-family: sans-serif;
-      font-size: 0.88rem;
-      transition: transform 0.3s ease;
-      z-index: 200;
-      max-width: 90vw;
-      text-align: center;
+      background: #6B1010; color: #fdd;
+      padding: 12px 24px; border-radius: 10px;
+      font-family: sans-serif; font-size: 0.88rem;
+      transition: transform 0.3s; z-index: 200;
+      max-width: 90vw; text-align: center;
     }
+    #error-toast.show { transform: translateX(-50%) translateY(0); }
 
-    #error-toast.show {
-      transform: translateX(-50%) translateY(0);
-    }
-
-    /* ── Responsive ── */
     @media (max-width: 480px) {
-      header h1 {
-        font-size: 1.8rem;
-      }
-
-      #mic-btn {
-        width: 76px;
-        height: 76px;
-        font-size: 1.7rem;
-      }
+      header h1 { font-size: 1.8rem; }
+      #mic-btn   { width: 76px; height: 76px; font-size: 1.7rem; }
     }
   </style>
 </head>
-
 <body>
 
-  <!-- ── Header ── -->
-  <header>
-    <h1>ONKI</h1>
-    <p>Voice Wine Sommelier</p>
-  </header>
+<header>
+  <h1>ONKI</h1>
+  <p>Voice Wine Sommelier</p>
+</header>
 
-  <!-- ── Dataset status ── -->
-  <div id="status-bar">
-    <div class="dot pulse" id="data-dot"></div>
-    <span id="data-status">Loading wine data…</span>
+<div id="status-bar">
+  <div class="dot pulse" id="data-dot"></div>
+  <span id="data-status">Loading wine data…</span>
+</div>
+
+<main>
+  <button id="mic-btn" onclick="toggleListen()" disabled>🎙</button>
+  <div id="mic-label">Tap to ask a question</div>
+
+  <div id="hints">
+    <span class="hint" onclick="ask('red wines under 30 dollars')">Red under $30</span>
+    <span class="hint" onclick="ask('best rated wines')">Best rated</span>
+    <span class="hint" onclick="ask('French wines')">French wines</span>
+    <span class="hint" onclick="ask('Chardonnay')">Chardonnay</span>
+    <span class="hint" onclick="ask('sparkling wines')">Sparkling</span>
+    <span class="hint" onclick="ask('wines from California')">California</span>
   </div>
 
-  <!-- ── Main interaction ── -->
-  <main>
-    <button id="mic-btn" onclick="toggleListen()" disabled>🎙</button>
-    <div id="mic-label">Tap to ask a question</div>
+  <div class="card" id="question-card">
+    <div class="card-label">You asked</div>
+    <div class="card-text" id="question-text"></div>
+  </div>
 
-    <div class="card" id="question-card">
-      <div class="card-label">You asked</div>
-      <div class="card-text" id="question-text"></div>
-    </div>
+  <div class="card" id="answer-card">
+    <div class="card-label">Sommelier says</div>
+    <div class="card-text" id="answer-text"></div>
+  </div>
 
-    <div id="loading">
-      <div class="spinner"></div>
-      <span>Consulting the cellar…</span>
-    </div>
+  <button id="speak-btn" onclick="replayAnswer()">🔊 Hear it again</button>
+</main>
 
-    <div class="card" id="answer-card">
-      <div class="card-label">Sommelier says</div>
-      <div class="card-text" id="answer-text"></div>
-    </div>
+<div id="error-toast"></div>
 
-    <button id="speak-btn" onclick="replayAnswer()">🔊 Hear it again</button>
-  </main>
+<!-- Wine data — loaded once, used as source of truth -->
+<script src="wine-data.js"></script>
 
-  <!-- ── Error toast ── -->
-  <div id="error-toast"></div>
+<script>
+// ── State ────────────────────────────────────────────────────────────────────
+let lastAnswer = '';
+let isListening = false;
 
-  <script>
-    // ── Config — replace with your Gemini API key ──
-    const API_KEY = 'AIzaSyABCCOApzFUcQugPGHYTvVucoFPOmnGRkQ';
-    const SHEET_ID = '1Bkv3Jb_8YuLUG2rWUhJhQBdaGjQCMFfwF9oJ5jrYDSA';
-    const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${API_KEY}`;
+// ── Init ─────────────────────────────────────────────────────────────────────
+window.addEventListener('load', () => {
+  if (typeof WINE_DATA !== 'undefined' && WINE_DATA.length) {
+    document.getElementById('data-dot').className = 'dot green';
+    document.getElementById('data-status').textContent = `${WINE_DATA.length} wines loaded`;
+    document.getElementById('mic-btn').disabled = false;
+  } else {
+    document.getElementById('data-dot').className = 'dot orange';
+    document.getElementById('data-status').textContent = 'wine-data.js not found';
+    showError('Could not load wine-data.js — make sure it\'s in the same folder.');
+  }
+});
 
-    // ── State ──
-    let wineData = [];
-    let lastAnswer = '';
-    let isListening = false;
+// ── Speech Recognition ────────────────────────────────────────────────────────
+const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+if (!SpeechRecognition) {
+  document.getElementById('mic-label').textContent = 'Speech not supported — try Chrome or Edge';
+}
 
-    // ── Load dataset via JSONP (bypasses CORS for file:// origins) ──
-    function loadDataset() {
-      window._onkiGviz = (raw) => {
-        try {
-          // gviz wraps response in /*O_o*/ google.visualization.Query.setResponse({...});
-          // When loaded via <script> the callback is called directly.
-          const cols = raw.table.cols.map(c => c.label || c.id);
-          wineData = raw.table.rows
-            .map(r => Object.fromEntries(cols.map((c, i) => [c, r.c?.[i]?.v ?? ''])))
-            .filter(row => Object.values(row).some(Boolean));
+let recognition = null;
+if (SpeechRecognition) {
+  recognition = new SpeechRecognition();
+  recognition.lang = 'en-US';
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
 
-          if (!wineData.length) throw new Error('Dataset appears empty');
-          setDataStatus(true, `${wineData.length} wines loaded`);
-          document.getElementById('mic-btn').disabled = false;
-        } catch (err) {
-          setDataStatus(false, 'Could not parse wine data');
-          showError('Loaded the sheet but could not read it. Check the console.');
-          console.error(err);
-        }
-      };
+  recognition.onstart = () => {
+    isListening = true;
+    document.getElementById('mic-btn').classList.add('listening');
+    document.getElementById('mic-btn').textContent = '⏹';
+    document.getElementById('mic-label').textContent = 'Listening… speak now';
+  };
+  recognition.onend = () => {
+    isListening = false;
+    document.getElementById('mic-btn').classList.remove('listening');
+    document.getElementById('mic-btn').textContent = '🎙';
+    document.getElementById('mic-label').textContent = 'Tap to ask a question';
+  };
+  recognition.onresult = (e) => {
+    const t = e.results[0][0].transcript.trim();
+    if (t) ask(t);
+  };
+  recognition.onerror = (e) => {
+    if (e.error !== 'no-speech' && e.error !== 'aborted') showError(`Mic: ${e.error}`);
+  };
+}
 
-      const s = document.createElement('script');
-      s.src = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json;responseHandler:_onkiGviz&gid=0`;
-      s.onerror = () => {
-        setDataStatus(false, 'Could not load wine data');
-        showError('Failed to reach Google Sheets. Check your internet connection.');
-      };
-      document.head.appendChild(s);
+function toggleListen() {
+  if (isListening) { recognition?.stop(); return; }
+  window.speechSynthesis.cancel();
+  recognition?.start();
+}
+
+// ── Main entry point ──────────────────────────────────────────────────────────
+function ask(question) {
+  document.getElementById('question-text').textContent = question;
+  document.getElementById('question-card').classList.add('visible');
+  document.getElementById('answer-card').classList.remove('visible');
+  document.getElementById('speak-btn').classList.remove('visible');
+
+  const answer = getAnswer(question.toLowerCase());
+  lastAnswer = answer;
+
+  document.getElementById('answer-text').textContent = answer;
+  document.getElementById('answer-card').classList.add('visible');
+  document.getElementById('speak-btn').classList.add('visible');
+  speak(answer);
+}
+
+// ── Answer engine ─────────────────────────────────────────────────────────────
+function getAnswer(q) {
+  const wines = WINE_DATA;
+
+  // ── Price extraction ──────────────────────────────────────────────────────
+  const underMatch  = q.match(/under\s+\$?(\d+)/);
+  const overMatch   = q.match(/over\s+\$?(\d+)/);
+  const rangeMatch  = q.match(/\$?(\d+)\s*(?:to|-)\s*\$?(\d+)/);
+  const maxPrice    = underMatch  ? parseFloat(underMatch[1])  : null;
+  const minPrice    = overMatch   ? parseFloat(overMatch[1])   : null;
+  const priceRange  = rangeMatch  ? [parseFloat(rangeMatch[1]), parseFloat(rangeMatch[2])] : null;
+
+  // ── Color ─────────────────────────────────────────────────────────────────
+  const wantsRed       = /\bred\b/.test(q);
+  const wantsWhite     = /\bwhite\b/.test(q);
+  const wantsSparkling = /\bsparkling\b|\bchampagne\b|\bprosecco\b|\bcava\b/.test(q);
+  const wantsRose      = /\bros[eé]\b/.test(q);
+
+  // ── Specific varietals ────────────────────────────────────────────────────
+  const varietals = [
+    'cabernet sauvignon','cabernet franc','merlot','pinot noir','syrah','shiraz',
+    'malbec','zinfandel','sangiovese','tempranillo','grenache','nebbiolo',
+    'chardonnay','sauvignon blanc','pinot grigio','pinot gris','riesling',
+    'moscato','viognier','gewurztraminer','chenin blanc','gruner veltliner',
+    'champagne','prosecco','sparkling','rose','rosé','red blend','white blend'
+  ];
+  const matchedVarietal = varietals.find(v => q.includes(v));
+
+  // ── Country / region ──────────────────────────────────────────────────────
+  const places = {
+    france: ['france','french','bordeaux','burgundy','champagne','rhône','loire','alsace'],
+    italy:  ['italy','italian','tuscany','veneto','piedmont','sicily'],
+    usa:    ['usa','united states','american','california','napa','sonoma','oregon','washington'],
+    spain:  ['spain','spanish','rioja','ribera'],
+    argentina: ['argentina','argentinian','mendoza'],
+    australia: ['australia','australian'],
+    'new zealand': ['new zealand'],
+    chile:  ['chile','chilean'],
+    germany:['germany','german'],
+    portugal:['portugal','portuguese'],
+  };
+  let matchedCountry = null;
+  let matchedRegion  = null;
+  for (const [country, terms] of Object.entries(places)) {
+    if (terms.some(t => q.includes(t))) {
+      matchedCountry = country;
+      // specific region keywords
+      const regionMap = { bordeaux:'Bordeaux', burgundy:'Burgundy', champagne:'Champagne',
+        napa:'Napa Valley', sonoma:'Sonoma', tuscany:'Tuscany', rioja:'Rioja',
+        mendoza:'Mendoza', marlborough:'Marlborough' };
+      for (const [k,v] of Object.entries(regionMap)) {
+        if (q.includes(k)) matchedRegion = v;
+      }
+      break;
+    }
+  }
+
+  // ── Vintage ───────────────────────────────────────────────────────────────
+  const vintageMatch = q.match(/\b(19|20)\d{2}\b/);
+  const wantedVintage = vintageMatch ? vintageMatch[0] : null;
+
+  // ── Intent detection ──────────────────────────────────────────────────────
+  const wantsBest     = /\bbest\b|\btop\b|\bhighest.?rated\b|\bbest.?rated\b/.test(q);
+  const wantsCheap    = /\bcheap\b|\baffordable\b|\bbudget\b|\binexpensive\b/.test(q);
+  const wantsExpensive= /\bexpensive\b|\bluxury\b|\bpremium\b|\btop.?shelf\b/.test(q);
+  const wantsRecommend= /\brecommend\b|\bsuggest\b|\bsomething\b|\bwhat.?should\b/.test(q);
+  const wantsList     = /\blist\b|\bshow\b|\ball\b|\bwhat\s+\w+\s+wines?\b/.test(q);
+  const wantsCount    = /\bhow many\b/.test(q);
+  const wantsAbout    = /\btell me about\b|\bwhat is\b|\bwhat's\b/.test(q);
+
+  // ── Build filter ──────────────────────────────────────────────────────────
+  let results = wines.filter(w => {
+    const color    = (w.color || '').toLowerCase();
+    const varietal = (w.Varietal || '').toLowerCase();
+    const country  = (w.Country || '').toLowerCase();
+    const region   = (w.Region || '').toLowerCase();
+    const appell   = (w.Appellation || '').toLowerCase();
+    const name     = (w.Name || '').toLowerCase();
+
+    if (wantsRed       && color !== 'red')       return false;
+    if (wantsWhite     && color !== 'white')     return false;
+    if (wantsSparkling && color !== 'sparkling') return false;
+    if (wantsRose      && color !== 'rosé' && color !== 'rose') return false;
+
+    if (matchedVarietal) {
+      const vq = matchedVarietal.toLowerCase();
+      if (!varietal.includes(vq) && !name.includes(vq)) return false;
     }
 
-    function setDataStatus(ok, msg) {
-      const dot = document.getElementById('data-dot');
-      dot.className = 'dot ' + (ok ? 'green' : 'orange');
-      document.getElementById('data-status').textContent = msg;
-    }
-
-    // ── Speech Recognition ──
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) {
-      document.getElementById('mic-label').textContent = 'Speech recognition not supported — try Chrome or Edge';
-    }
-
-    let recognition = null;
-
-    if (SpeechRecognition) {
-      recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      recognition.onstart = () => {
-        isListening = true;
-        document.getElementById('mic-btn').classList.add('listening');
-        document.getElementById('mic-btn').textContent = '⏹';
-        document.getElementById('mic-label').textContent = 'Listening… speak now';
-      };
-
-      recognition.onend = () => {
-        isListening = false;
-        document.getElementById('mic-btn').classList.remove('listening');
-        document.getElementById('mic-btn').textContent = '🎙';
-        document.getElementById('mic-label').textContent = 'Tap to ask a question';
-      };
-
-      recognition.onresult = (e) => {
-        const transcript = e.results[0][0].transcript.trim();
-        if (transcript) handleQuestion(transcript);
-      };
-
-      recognition.onerror = (e) => {
-        if (e.error !== 'no-speech' && e.error !== 'aborted') {
-          showError(`Mic error: ${e.error}`);
-        }
-      };
-    }
-
-    function toggleListen() {
-      if (isListening) {
-        recognition?.stop();
-      } else {
-        window.speechSynthesis.cancel();
-        recognition?.start();
+    if (matchedCountry) {
+      const countryLower = country.toLowerCase();
+      if (!Object.values(places)[Object.keys(places).indexOf(matchedCountry)]
+          .some(t => countryLower.includes(t) || region.includes(t) || appell.includes(t))) {
+        // fallback: check country field directly
+        if (!countryLower.includes(matchedCountry) &&
+            !region.toLowerCase().includes(matchedCountry) &&
+            !appell.toLowerCase().includes(matchedCountry)) return false;
       }
     }
-
-    // ── Gemini ──
-    function buildDataContext() {
-      if (!wineData.length) return 'No wine data available.';
-      const headers = Object.keys(wineData[0]);
-      const rows = wineData.map(row => headers.map(h => row[h] ?? '').join(' | '));
-      return [headers.join(' | '), ...rows].join('\n');
+    if (matchedRegion) {
+      if (!region.includes(matchedRegion.toLowerCase()) &&
+          !appell.includes(matchedRegion.toLowerCase())) return false;
     }
 
-    async function askGemini(question) {
-      const prompt = `You are Onki, a friendly and knowledgeable wine sommelier assistant.
+    if (maxPrice   !== null && w.price > maxPrice)   return false;
+    if (minPrice   !== null && w.price < minPrice)   return false;
+    if (priceRange !== null && (w.price < priceRange[0] || w.price > priceRange[1])) return false;
+    if (wantedVintage && w.Vintage !== wantedVintage) return false;
 
-Your rules:
-- Answer ONLY using the wine dataset below. Do not invent wines or details not present in the data.
-- If the answer is clearly in the data, respond helpfully and specifically (mention wine names, prices, scores etc. from the data).
-- If the question is ambiguous, make a sensible interpretation and briefly state it.
-- If the question is unrelated to wine or cannot be answered from the data, say so politely and offer an alternative wine-related question you can help with.
-- Keep answers concise: 2–4 sentences for simple questions, a short list for comparisons.
+    return true;
+  });
 
-WINE DATASET:
-${buildDataContext()}
+  // ── "How many?" ───────────────────────────────────────────────────────────
+  if (wantsCount) {
+    return buildCountAnswer(results, q);
+  }
 
-User question: ${question}`;
+  // ── Exact wine lookup ("tell me about Caymus") ────────────────────────────
+  if (wantsAbout) {
+    const nameSearch = q.replace(/tell me about|what is|what's/g, '').trim();
+    const hit = wines.find(w => w.Name.toLowerCase().includes(nameSearch));
+    if (hit) return buildDetailAnswer(hit);
+  }
 
-      const res = await fetch(GEMINI_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
-          generationConfig: { temperature: 0.3, maxOutputTokens: 600 }
-        })
-      });
+  // ── Sort ──────────────────────────────────────────────────────────────────
+  if (wantsBest) {
+    results = results.filter(w => w.top_score > 0).sort((a, b) => b.top_score - a.top_score);
+  } else if (wantsCheap) {
+    results = results.filter(w => w.price > 0).sort((a, b) => a.price - b.price);
+  } else if (wantsExpensive) {
+    results = results.sort((a, b) => b.price - a.price);
+  } else if (wantsRecommend) {
+    results = results.filter(w => w.top_score > 0).sort((a, b) => b.top_score - a.top_score);
+  }
 
-      if (!res.ok) {
-        const body = await res.json().catch(() => ({}));
-        const msg = body?.error?.message || `Gemini error ${res.status}`;
-        throw new Error(res.status === 400 || res.status === 403 ? `API key issue: ${msg}` : msg);
-      }
+  // ── No results ────────────────────────────────────────────────────────────
+  if (!results.length) {
+    return "I couldn't find any wines matching that. Try asking for red, white, or sparkling wines, a specific grape like Chardonnay or Cabernet, or a country like France or Italy.";
+  }
 
-      const data = await res.json();
-      return data?.candidates?.[0]?.content?.parts?.[0]?.text?.trim()
-        || "Sorry, I didn't get a response. Please try again.";
-    }
+  // ── Single specific result (exact name search or very narrow) ─────────────
+  if (results.length === 1) return buildDetailAnswer(results[0]);
 
-    // ── Main flow ──
-    async function handleQuestion(question) {
-      document.getElementById('question-text').textContent = question;
-      document.getElementById('question-card').classList.add('visible');
-      document.getElementById('answer-card').classList.remove('visible');
-      document.getElementById('speak-btn').classList.remove('visible');
-      document.getElementById('loading').classList.add('visible');
-      document.getElementById('mic-btn').disabled = true;
+  // ── List mode ─────────────────────────────────────────────────────────────
+  const top = results.slice(0, 3);
+  return buildListAnswer(top, results.length, q);
+}
 
-      try {
-        const answer = await askGemini(question);
-        lastAnswer = answer;
-        document.getElementById('answer-text').textContent = answer;
-        document.getElementById('answer-card').classList.add('visible');
-        document.getElementById('speak-btn').classList.add('visible');
-        speak(answer);
-      } catch (err) {
-        showError(err.message);
-        console.error(err);
-      } finally {
-        document.getElementById('loading').classList.remove('visible');
-        document.getElementById('mic-btn').disabled = false;
-      }
-    }
+// ── Response builders ─────────────────────────────────────────────────────────
+function buildDetailAnswer(w) {
+  const score = w.top_score ? ` rated ${w.top_score}/100` : '';
+  const vintage = w.Vintage ? ` ${w.Vintage}` : '';
+  const source = w.ratings?.[0]?.source ? ` by ${w.ratings[0].source}` : '';
+  const note = w.ratings?.[0]?.note ? `\n\n"${w.ratings[0].note.slice(0, 180)}…"` : '';
+  return `${w.Name}${vintage} — $${w.Retail}${score}${source}.\n${w.Producer}, ${w.Region || w.Country}.${note}`;
+}
 
-    // ── TTS ──
-    function speak(text) {
-      window.speechSynthesis.cancel();
-      const u = new SpeechSynthesisUtterance(text);
-      u.rate = 0.93;
-      u.pitch = 1;
-      window.speechSynthesis.speak(u);
-    }
+function buildListAnswer(wines, total, q) {
+  const intro = total > 3
+    ? `I found ${total} wines. Here are the top 3:\n\n`
+    : `Here ${wines.length === 1 ? 'is' : 'are'} ${wines.length} wine${wines.length > 1 ? 's' : ''}:\n\n`;
 
-    function replayAnswer() {
-      if (lastAnswer) speak(lastAnswer);
-    }
+  const lines = wines.map((w, i) => {
+    const score   = w.top_score ? ` · ${w.top_score}/100` : '';
+    const vintage = w.Vintage   ? ` ${w.Vintage}` : '';
+    return `${i + 1}. ${w.Name}${vintage} — $${w.Retail}${score}`;
+  });
 
-    // ── Error toast ──
-    let toastTimer;
-    function showError(msg) {
-      const t = document.getElementById('error-toast');
-      t.textContent = msg;
-      t.classList.add('show');
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => t.classList.remove('show'), 5000);
-    }
+  return intro + lines.join('\n');
+}
 
-    // ── Init ──
-    loadDataset();
-  </script>
+function buildCountAnswer(results, q) {
+  if (!results.length) return "I couldn't find any wines matching that filter.";
+  return `I have ${results.length} wine${results.length > 1 ? 's' : ''} matching that in the collection.`;
+}
+
+// ── TTS ───────────────────────────────────────────────────────────────────────
+function speak(text) {
+  window.speechSynthesis.cancel();
+  // Shorten for speech (skip tasting notes)
+  const speechText = text.split('\n\n')[0].replace(/\n/g, '. ');
+  const u = new SpeechSynthesisUtterance(speechText);
+  u.rate  = 0.93;
+  u.pitch = 1;
+  window.speechSynthesis.speak(u);
+}
+
+function replayAnswer() { if (lastAnswer) speak(lastAnswer); }
+
+// ── Error toast ───────────────────────────────────────────────────────────────
+let toastTimer;
+function showError(msg) {
+  const t = document.getElementById('error-toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 5000);
+}
+</script>
 </body>
-
 </html>
