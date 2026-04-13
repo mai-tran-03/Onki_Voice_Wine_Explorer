@@ -12,17 +12,17 @@ Given a wine catalog dataset as the primary source of truth, create a chatbot an
 
 ## Feature and implementation
 * Loads wine data
-    * Fetches your Google Sheet as CSV on page load
+    * Fetches your Google Sheet as CSV and converts to JS
 * Voice input
     * Web Speech API — tap mic to speak, tap again to stop
-* AI answers
-    * Sends your question + the full wine dataset to Gemini 2.0 Flash (free)
+* Voice bot answers
+    * Asks your question, bot answers with locally coded logic using the dataset
 * Displays answer
 	* Shows your question and the sommelier's answer as cards
 * Speaks answer	
     * Text-to-speech plays automatically
     * "Hear it again" button to replay
 * Grounded answers
-	* Prompt explicitly tells Gemini to only use the dataset, not invent wines
+	* Explicitly only use the dataset, not invent wines
 * Handles edge cases
-	* Ambiguous → Gemini interprets and states its interpretation; Off-topic → politely redirects
+	* Ambiguous → bot only gives answers using smart keyword matching; Off-topic → politely redirects with some hint keywords

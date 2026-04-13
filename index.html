@@ -427,8 +427,8 @@ function buildCountAnswer(results, q) {
 // ── TTS ───────────────────────────────────────────────────────────────────────
 function speak(text) {
   window.speechSynthesis.cancel();
-  // Shorten for speech (skip tasting notes)
-  const speechText = text.split('\n\n')[0].replace(/\n/g, '. ');
+  // Speak full response but trim long tasting notes (anything after a quoted line)
+  const speechText = text.replace(/\n".*$/s, '').replace(/\n/g, '. ');
   const u = new SpeechSynthesisUtterance(speechText);
   u.rate  = 0.93;
   u.pitch = 1;
