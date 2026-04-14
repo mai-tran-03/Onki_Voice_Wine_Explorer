@@ -1,5 +1,10 @@
 # Onki Voice Wine Explorer
 
+### Run webapp
+* Download `index.html`
+* Open that file in Chrome/Safari
+
+## Objective
 Given a wine catalog dataset as the primary source of truth, create a chatbot answering the user's questions solely based on the dataset.
 
 ## App desired functions:
